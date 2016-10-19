@@ -18,7 +18,6 @@ body.full_mode {
   height: 100%;
   width: 100%;
   position: absolute;
-  top: 0 !important;
 }
 
 .ytp-chrome-bottom {
@@ -28,8 +27,13 @@ body.full_mode {
   height: 100% !important;
   width: 100% !important;
   left: 0 !important;
+  top: 0 !important;
 }
 
 .ytp-chrome-bottom.full_mode {
   width: 99% !important;
+}
+
+.ytp-upnext {
+  top: 0px; !important;
 }

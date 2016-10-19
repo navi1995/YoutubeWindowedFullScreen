@@ -11,7 +11,9 @@
       createElements();
     } else {
       try {
-        leaveFullBrowser();
+        if (isFullMode) {
+          leaveFullBrowser();
+        }
       } catch(err) {
       }
     }
