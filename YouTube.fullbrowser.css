@@ -35,5 +35,29 @@ body.full_mode {
 }
 
 .ytp-upnext {
-  top: 0px; !important;
+  top: 0px !important;
+}
+
+#movie_player.updated-full-mode {
+  width: 100% !important;
+  height: 100% !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+}
+
+video.updated-full-mode {
+  width: 100% !important;
+  height: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+body.updated-full-mode {
+  overflow-y: hidden !important;
+}
+
+.svg-container {
+  margin: 9px;
 }
