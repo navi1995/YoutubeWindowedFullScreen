@@ -45,6 +45,7 @@ body.full_mode {
   top: 0 !important;
   left: 0 !important;
   z-index: 9999 !important;
+  z-index: 2147483646 !important;
 }
 
 video.updated-full-mode {
@@ -60,4 +61,12 @@ body.updated-full-mode {
 
 .svg-container {
   margin: 9px;
+}
+
+.ad-container:not(.ad-overlay) {
+  top: 0px;
+}
+
+#T_hr {
+  z-index: 9998 !important; 
 }
