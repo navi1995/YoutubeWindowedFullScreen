@@ -112,12 +112,16 @@
           leaveFullBrowser();
         }
 
-        if (e.keyCode == 84) {
-          toggleFullBrowser();
-        }
+        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT" || e.target.classList.contains("comment-simplebox-text")) {
+          //Ignore these two types.
+        } else {
+          if (e.keyCode == 84) {
+            toggleFullBrowser();
+          }
 
-        if (e.keyCode == 70) {
-          toggleIcon();
+          if (e.keyCode == 70) {
+            toggleIcon();
+          }
         }
       });
 
@@ -238,12 +242,16 @@
           leaveFullBrowser();
         }
 
-        if (e.keyCode == 84) {
-          toggleFullBrowser();
-        }
+        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT") {
+          //Ignore these two types.
+        } else {
+          if (e.keyCode == 84) {
+            toggleFullBrowser();
+          }
 
-        if (e.keyCode == 70) {
-          toggleIcon();
+          if (e.keyCode == 70) {
+            toggleIcon();
+          }
         }
       });
 
