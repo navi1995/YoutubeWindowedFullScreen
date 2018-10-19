@@ -161,12 +161,26 @@
     var isFullMode = false;
     var isFullScreen = false;
     var controlsCreated = false;
+    var watchContainer = null;
+    var mediaQueryContainer = null;
+    var resizeEvent = null;
+
+    if (watchContainer) {
+      mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
+    }
 
     document.body.addEventListener("yt-navigate-finish", function(event) {
       var video = document.querySelector("video[src^='blob:https://www.youtube.com'");
 
       if (video && !controlsCreated) {
         createControl();
+
+        watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
+        mediaQueryContainer = null;
+
+        if (watchContainer) {
+          mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
+        }
       }
     });
 
@@ -178,13 +192,27 @@
       }
     }
 
+    function handleMediaQuery(mq) {
+      var original = document.getElementById("original-size");
+
+      if (mq.matches && mediaQueryContainer) {
+        mediaQueryContainer.setAttribute("query", "max-width: 882px");
+        original.style.display = "none";
+      } else if (mediaQueryContainer) {
+        mediaQueryContainer.setAttribute("query", "min-width: 882px");
+      }
+    }
 
     function enterFullBrowser() {
+      resizeEvent = window.matchMedia("(max-width: 882px)");
+      resizeEvent.addListener(handleMediaQuery);
+
       var original = document.getElementById("original-size");
       var newControl = document.getElementById("full-size");
+      var watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
 
       isFullMode = true;
-      isTheatreMode = document.body.getElementsByTagName("ytd-watch")[0].hasAttribute("theater");
+      isTheatreMode = watchContainer.hasAttribute("theater");
       initialTheatreMode = isTheatreMode;
 
       if (!isTheatreMode) {
@@ -198,6 +226,7 @@
       original.style.display = "none";
       newControl.style.display = "inline-block";
       newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
+      handleMediaQuery(resizeEvent);
       window.dispatchEvent(new Event('resize'));
     }
 
@@ -217,6 +246,11 @@
         original.click();
       }
 
+      if (mediaQueryContainer) {
+        mediaQueryContainer.setAttribute("query", "min-width: 882px");
+      }
+
+      resizeEvent.removeListener(handleMediaQuery);
       window.dispatchEvent(new Event('resize'));
     }
 

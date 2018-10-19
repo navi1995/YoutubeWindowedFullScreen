@@ -70,3 +70,7 @@ body.updated-full-mode {
 #T_hr {
   z-index: 9998 !important; 
 }
+
+.ytp-browser-button {
+  display: inline-block !important;
+}
