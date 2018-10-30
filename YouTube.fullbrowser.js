@@ -57,6 +57,7 @@
       document.getElementsByClassName("html5-main-video")[0].classList.add("full_mode");
 
       var newControl = document.getElementById("full-size");
+
       original.style.display = "none";
       newControl.style.display = "inline-block";
       newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
@@ -65,7 +66,6 @@
 
     function leaveFullBrowser() {
       isFullMode = false;
-
       document.getElementById("movie_player").classList.remove("full_mode");
       document.body.classList.remove("full_mode");
       document.getElementById("masthead-positioner").classList.remove("full_mode");
