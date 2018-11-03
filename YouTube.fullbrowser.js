@@ -276,7 +276,7 @@
           leaveFullBrowser();
         }
 
-        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT") {
+        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT" || e.target.nodeName == "YT-FORMATTED-STRING") {
           //Ignore these two types.
         } else {
           if (e.keyCode == 84) {
