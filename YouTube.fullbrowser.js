@@ -1,4 +1,4 @@
-//YouTube page doesn't support complete jQuery, need to use alot of vanilla javascript.
+//YouTube page doesn't support complete jQuery, need to use alot of vanilla javascript. 
 (function () {
 	var isFullMode = false;
 	var isFullScreen = false;
