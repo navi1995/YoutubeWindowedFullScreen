@@ -1,313 +1,155 @@
+//YouTube page doesn't support complete jQuery, need to use alot of vanilla javascript.
 (function () {
-  var page = document.getElementById("page");
+	var isFullMode = false;
+	var isFullScreen = false;
+	var controlsCreated = false;
+	var watchContainer = null;
+	var mediaQueryContainer = null;
+	var resizeEvent = null;
+	var initialTheatreMode = false;
 
-  if (page) {
-    var isFullMode = false;
-    var isFullScreen = false;
-    var isTheatreMode = (page.classList.contains("watch-wide") && page.classList.contains("watch-stage-mode") && !page.classList.contains("watch-non-stage-mode"));
-    var initialTheatreMode = isTheatreMode;
-    var controlsCreated = false;
+	onPageReady();
 
-    function afterNavigate() {
-      if (location.pathname == "/watch" && !controlsCreated) {
-        createElements();
-      } else {
-        try {
-          if (isFullMode) {
-            leaveFullBrowser();
-          }
-        } catch(err) {
-        }
-      }
-    }
+	function onPageReady() {
+		if (watchContainer) {
+			mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
+		}
 
-    afterNavigate();
-    (document.body || document.documentElement).addEventListener('transitionend', function(e) {
-      if ((e.propertyName == "width" && e.target.id == "progress") || (e.target.id == "appbar-guide-menu" && e.propertyName == "opacity")) {
-        afterNavigate();
-      }
-    }, true);
+		//This event lets us know when the youtube player is ready, and we can inject our controls in.
+		document.body.addEventListener("yt-navigate-finish", function () {
+			var video = document.querySelector("video[src^='blob:https://www.youtube.com'");
 
-    function toggleFullBrowser() {
-      if (isFullMode) {
-        leaveFullBrowser();
-      } else {
-        enterFullBrowser();
-      }
-    }
+			if (video && !controlsCreated) {
+				createControl();
+				watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
+				mediaQueryContainer = null;
 
+				if (watchContainer) {
+					mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
+				}
+			}
+		});
+	}
 
-    function enterFullBrowser() {
-      var original = document.getElementById("original-size");
+	function toggleFullBrowser() {
+		if (isFullMode) {
+			leaveFullBrowser();
+		} else {
+			enterFullBrowser();
+		}
+	}
 
-      isFullMode = true;
-      isTheatreMode = (page.classList.contains("watch-wide") && page.classList.contains("watch-stage-mode") && !page.classList.contains("watch-non-stage-mode"));
-      initialTheatreMode = isTheatreMode;
+	function enterFullBrowser() {
+		var original = document.getElementById("original-size");
+		var newControl = document.getElementById("full-size");
+		var watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
 
-      if (!isTheatreMode) {
-        original.click();
+		resizeEvent = window.matchMedia("(max-width: 882px)");
+		resizeEvent.addListener(handleMediaQuery);
+		isFullMode = true;
+		isTheatreMode = watchContainer.hasAttribute("theater");
+		initialTheatreMode = isTheatreMode;
 
-        isTheatreMode = true;
-      }
+		//Since our button is cloned from theatre button, we must toggle functionality to ensure state of player remains what it was before user clicked button.
+		if (!isTheatreMode) {
+			original.click();
+			isTheatreMode = true;
+		}
 
-      document.getElementById("movie_player").classList.add("full_mode");
-      document.body.classList.add("full_mode");
-      document.getElementById("masthead-positioner").classList.add("full_mode");
-      document.getElementsByClassName("ytp-chrome-bottom")[0].classList.add("full_mode");
-      document.getElementsByClassName("html5-main-video")[0].classList.add("full_mode");
+		document.getElementById("movie_player").classList.add("updated-full-mode");
+		document.body.classList.add("updated-full-mode");
+		document.getElementsByClassName("html5-main-video")[0].classList.add("updated-full-mode");
+		original.style.display = "none";
+		newControl.style.display = "inline-block";
+		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
+		handleMediaQuery(resizeEvent);
+		window.dispatchEvent(new Event('resize'));
+	}
 
-      var newControl = document.getElementById("full-size");
+	function leaveFullBrowser() {
+		var original = document.getElementById("original-size");
+		var newControl = document.getElementById("full-size");
 
-      original.style.display = "none";
-      newControl.style.display = "inline-block";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
-      window.dispatchEvent(new Event('resize'));
-    }
+		isFullMode = false;
+		document.getElementById("movie_player").classList.remove("updated-full-mode");
+		document.body.classList.remove("updated-full-mode");
+		document.getElementsByClassName("html5-main-video")[0].classList.remove("updated-full-mode");
+		original.style.display = "inline-block";
+		newControl.style.display = "inline-block";
+		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
 
-    function leaveFullBrowser() {
-      isFullMode = false;
-      document.getElementById("movie_player").classList.remove("full_mode");
-      document.body.classList.remove("full_mode");
-      document.getElementById("masthead-positioner").classList.remove("full_mode");
-      document.getElementsByClassName("ytp-chrome-bottom")[0].classList.remove("full_mode");
-      document.getElementsByClassName("html5-main-video")[0].classList.remove("full_mode");
+		//Since our button is cloned from theatre button, we must toggle functionality to ensure state of player remains what it was before user clicked button. This variable is set in enterFullBrowser
+		if (!initialTheatreMode) {
+			original.click();
+		}
 
-      var original = document.getElementById("original-size");
-      original.style.display = "inline-block";
-      var newControl = document.getElementById("full-size");
-      newControl.style.display = "inline-block";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
+		if (mediaQueryContainer) {
+			mediaQueryContainer.setAttribute("query", "min-width: 882px");
+		}
 
-      if (!initialTheatreMode) {
-        original.click();
-      }
+		resizeEvent.removeListener(handleMediaQuery);
+		window.dispatchEvent(new Event('resize'));
+	}
 
-      window.dispatchEvent(new Event('resize'));
-    }
+	//We create control by cloning an existing button (Theater button), and replacing the HTML with SVG for the expand icon.
+	function createControl() {
+		var original = document.getElementsByClassName("ytp-size-button")[0];
+		var fullScreenButton = document.getElementsByClassName("ytp-fullscreen-button")[0];
+		var copy = original.cloneNode(true);
 
-    function createElements() {
-      var original = document.getElementsByClassName("ytp-size-button")[0];
-      var copy = original.cloneNode(true);
-      original.id = "original-size";
-      copy.id = "full-size";
+		original.id = "original-size";
+		copy.id = "full-size";
 
-      var controls = document.getElementsByClassName("ytp-right-controls")[0];
-      var newControl = controls.insertBefore(copy, original);
+		var controls = document.getElementsByClassName("ytp-right-controls")[0];
+		var newControl = controls.insertBefore(copy, original);
 
-      newControl.title = "Full Browser Mode";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
+		newControl.title = "Full Browser Mode";
+		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
+		newControl.addEventListener("click", toggleFullBrowser);
+		//Adding shortcuts, also ignoring if user is typing into comment/search fields etc
+		document.body.addEventListener("keyup", function (e) {
+			if (e.keyCode == 27 && isFullMode && location.pathname == "/watch") {
+				leaveFullBrowser();
+			}
 
-      var menu = document.getElementsByClassName("ytp-panel-menu")[0];
-      menu.innerHTML = "<div class=\"ytp-menuitem\" id=\"loopVideo\" role=\"menuitemcheckbox\" aria-checked=\"false\" tabindex=\"0\"><div class=\"ytp-menuitem-label\">Loop Video</div><div class=\"ytp-menuitem-content\"><div class=\"ytp-menuitem-toggle-checkbox\"></div></div></div>" + menu.innerHTML;
-      document.getElementById("loopVideo").addEventListener("click", function(e) {
-        toggleLoop(this);
-      })
+			if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT" || e.target.nodeName == "YT-FORMATTED-STRING" || (e.target.nodeName == "DIV" && e.target.className == "style-scope yt-formatted-string")) {
+				//Ignore these two types.
+			} else {
+				if (e.keyCode == 192 && location.pathname == "/watch") {
+					toggleFullBrowser();
+				}
 
-      newControl.addEventListener("click", function() {
-        toggleFullBrowser();
-      });
+				if (e.keyCode == 70 && location.pathname == "/watch") {
+					toggleIcon();
+				}
+			}
+		});
+		//We hide the full browser button if user is in full-screen video.
+		fullScreenButton.addEventListener("click", toggleIcon);
+		controlsCreated = true;
+	}
 
-      body.addEventListener("keyup", function(e) {
-        if (e.keyCode == 27 && isFullMode) {
-          leaveFullBrowser();
-        }
+	//Essentially we hide original button if screen size is too small, to ensure button always appears on resize.
+	function handleMediaQuery(mq) {
+		var original = document.getElementById("original-size");
 
-        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT" || e.target.classList.contains("comment-simplebox-text")) {
-          //Ignore these two types.
-        } else {
-          if (e.keyCode == 84) {
-            toggleFullBrowser();
-          }
+		if (mq.matches && mediaQueryContainer) {
+			mediaQueryContainer.setAttribute("query", "max-width: 882px");
+			original.style.display = "none";
+		} else if (mediaQueryContainer) {
+			mediaQueryContainer.setAttribute("query", "min-width: 882px");
+		}
+	}
 
-          if (e.keyCode == 70) {
-            toggleIcon();
-          }
-        }
-      });
+	function toggleIcon() {
+		var newControl = document.getElementById("full-size");
 
-      var fullScreenButton = document.getElementsByClassName("ytp-fullscreen-button")[0]
-      fullScreenButton.addEventListener("click", function() {
-        toggleIcon();
-      })
-
-      controlsCreated = true;
-    }
-
-    function toggleIcon() {
-      var newControl = document.getElementById("full-size");
-
-      if (isFullScreen && newControl.style.display != "inline-block") {
-        newControl.style.display = "inline-block";
-        isFullScreen = false;
-      } else if (newControl.style.display == "inline-block") {
-        newControl.style.display = "none";
-        isFullScreen = true;
-      }
-    }
-
-    function toggleLoop(element) {
-      var videoPlayer = document.getElementsByTagName("video")[0];
-
-      if (element.getAttribute("aria-checked") == "false") {
-        element.setAttribute("aria-checked", true);
-        videoPlayer.loop = true;
-      } else {
-        element.setAttribute("aria-checked", false);
-        videoPlayer.loop = false;
-      }
-    }
-  } else {
-    //NEW LOGIC
-    var isFullMode = false;
-    var isFullScreen = false;
-    var controlsCreated = false;
-    var watchContainer = null;
-    var mediaQueryContainer = null;
-    var resizeEvent = null;
-
-    if (watchContainer) {
-      mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
-    }
-
-    document.body.addEventListener("yt-navigate-finish", function(event) {
-      var video = document.querySelector("video[src^='blob:https://www.youtube.com'");
-
-      if (video && !controlsCreated) {
-        createControl();
-
-        watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
-        mediaQueryContainer = null;
-
-        if (watchContainer) {
-          mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
-        }
-      }
-    });
-
-    function toggleFullBrowser() {
-      if (isFullMode) {
-        leaveFullBrowser();
-      } else {
-        enterFullBrowser();
-      }
-    }
-
-    function handleMediaQuery(mq) {
-      var original = document.getElementById("original-size");
-
-      if (mq.matches && mediaQueryContainer) {
-        mediaQueryContainer.setAttribute("query", "max-width: 882px");
-        original.style.display = "none";
-      } else if (mediaQueryContainer) {
-        mediaQueryContainer.setAttribute("query", "min-width: 882px");
-      }
-    }
-
-    function enterFullBrowser() {
-      resizeEvent = window.matchMedia("(max-width: 882px)");
-      resizeEvent.addListener(handleMediaQuery);
-
-      var original = document.getElementById("original-size");
-      var newControl = document.getElementById("full-size");
-      var watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
-
-      isFullMode = true;
-      isTheatreMode = watchContainer.hasAttribute("theater");
-      initialTheatreMode = isTheatreMode;
-
-      if (!isTheatreMode) {
-        original.click();
-        isTheatreMode = true;
-      }
-
-      document.getElementById("movie_player").classList.add("updated-full-mode");
-      document.body.classList.add("updated-full-mode");
-      document.getElementsByClassName("html5-main-video")[0].classList.add("updated-full-mode");
-      original.style.display = "none";
-      newControl.style.display = "inline-block";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
-      handleMediaQuery(resizeEvent);
-      window.dispatchEvent(new Event('resize'));
-    }
-
-    function leaveFullBrowser() {
-      var original = document.getElementById("original-size");
-      var newControl = document.getElementById("full-size");
-
-      isFullMode = false;
-      document.getElementById("movie_player").classList.remove("updated-full-mode");
-      document.body.classList.remove("updated-full-mode");
-      document.getElementsByClassName("html5-main-video")[0].classList.remove("updated-full-mode");
-      original.style.display = "inline-block";
-      newControl.style.display = "inline-block";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
-
-      if (!initialTheatreMode) {
-        original.click();
-      }
-
-      if (mediaQueryContainer) {
-        mediaQueryContainer.setAttribute("query", "min-width: 882px");
-      }
-
-      resizeEvent.removeListener(handleMediaQuery);
-      window.dispatchEvent(new Event('resize'));
-    }
-
-    function createControl() {
-      var original = document.getElementsByClassName("ytp-size-button")[0];
-      var copy = original.cloneNode(true);
-
-      original.id = "original-size";
-      copy.id = "full-size";
-
-      var controls = document.getElementsByClassName("ytp-right-controls")[0];
-      var newControl = controls.insertBefore(copy, original);
-
-      newControl.title = "Full Browser Mode";
-      newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
-
-      newControl.addEventListener("click", function() {
-        toggleFullBrowser();
-      });
-
-      document.body.addEventListener("keyup", function(e) {
-        if (e.keyCode == 27 && isFullMode) {
-          leaveFullBrowser();
-        }
-
-        if (e.target.nodeName == "TEXTAREA" || e.target.nodeName == "INPUT" || e.target.nodeName == "YT-FORMATTED-STRING") {
-          //Ignore these two types.
-        } else {
-          if (e.keyCode == 84) {
-            toggleFullBrowser();
-          }
-
-          if (e.keyCode == 70) {
-            toggleIcon();
-          }
-        }
-      });
-
-      var fullScreenButton = document.getElementsByClassName("ytp-fullscreen-button")[0];
-      
-      fullScreenButton.addEventListener("click", function() {
-        toggleIcon();
-      })
-
-      controlsCreated = true;
-    }
-
-    function toggleIcon() {
-      var newControl = document.getElementById("full-size");
-
-      if (isFullScreen) {
-        newControl.style.display = "inline-block";
-        isFullScreen = false;
-      } else {
-        newControl.style.display = "none";
-        isFullScreen = true;
-      }
-    }
-  }
+		if (isFullScreen) {
+			newControl.style.display = "inline-block";
+			isFullScreen = false;
+		} else {
+			newControl.style.display = "none";
+			isFullScreen = true;
+		}
+	}
 }());
