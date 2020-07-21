@@ -16,3 +16,9 @@ chrome.runtime.onInstalled.addListener(function() {
     ]);
   });
 });
+
+function handleClick() {
+  chrome.runtime.openOptionsPage();
+}
+
+chrome.browserAction.onClicked.addListener(handleClick);
