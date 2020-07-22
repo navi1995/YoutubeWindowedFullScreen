@@ -1,4 +1,5 @@
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function(obj) {
+  chrome.runtime.openOptionsPage();
   // Replace all rules ...
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
     // With a new rule ...

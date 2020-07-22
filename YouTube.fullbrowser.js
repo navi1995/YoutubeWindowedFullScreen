@@ -24,6 +24,8 @@
 		if (watchContainer) {
 			mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
 		}
+		
+		pageReadyInterval();
 
 		//This event lets us know when the youtube player is ready, and we can inject our controls in.
 		document.body.addEventListener("yt-navigate-finish", function () {
