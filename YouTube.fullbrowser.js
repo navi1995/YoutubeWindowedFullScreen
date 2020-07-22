@@ -35,10 +35,17 @@
 			var loop = setInterval(function() {
 				if (location.pathname == "/watch") {
 					pageReadyInterval();
+				} else {
+					clearInterval(loop);
 				}
 
 				if (location.pathname == "/watch" && controlsCreated) {
 					clearInterval(loop);
+
+					//If navigating to a new video, enter full browser if setting is valid.
+					if (extensionSettings.autoToggle) {
+						enterFullBrowser();
+					}
 				}
 			}, 500);
 		});
@@ -70,6 +77,7 @@
 		var original = document.getElementById("original-size");
 		var newControl = document.getElementById("full-size");
 		var watchContainer = document.querySelector("ytd-watch") || document.querySelector("ytd-watch-flexy");
+		var miniplayerButton = document.getElementsByClassName("ytp-miniplayer-button")[0];
 
 		resizeEvent = window.matchMedia("(max-width: 882px)");
 		resizeEvent.addListener(handleMediaQuery);
@@ -89,6 +97,7 @@
 		original.style.display = "none";
 		newControl.style.display = "inline-block";
 		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\" style=\"fill: white;\"></path></svg>";
+		miniplayerButton.style.display = "none";
 		handleMediaQuery(resizeEvent);
 		window.dispatchEvent(new Event("resize"));
 	}
@@ -96,6 +105,7 @@
 	function leaveFullBrowser() {
 		var original = document.getElementById("original-size");
 		var newControl = document.getElementById("full-size");
+		var miniplayerButton = document.getElementsByClassName("ytp-miniplayer-button")[0];
 
 		isFullMode = false;
 		document.getElementById("movie_player").classList.remove("updated-full-mode");
@@ -104,6 +114,7 @@
 		original.style.display = "inline-block";
 		newControl.style.display = "inline-block";
 		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
+		miniplayerButton.style.display = "inline-block";
 
 		//Since our button is cloned from theatre button, we must toggle functionality to ensure state of player remains what it was before user clicked button. This variable is set in enterFullBrowser
 		if (!initialTheatreMode) {
@@ -122,6 +133,7 @@
 	function createControl() {
 		var original = document.getElementsByClassName("ytp-size-button")[0];
 		var fullScreenButton = document.getElementsByClassName("ytp-fullscreen-button")[0];
+		var miniplayerButton = document.getElementsByClassName("ytp-miniplayer-button")[0];
 		var copy = original.cloneNode(true);
 
 		original.id = "original-size";
@@ -134,6 +146,11 @@
 		newControl.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 1792 1792\" xmlns=\"http://www.w3.org/2000/svg\" class=\"svg-container\"><path d=\"M883 1056q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23zm781-864v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45z\" style=\"fill: white;\"></path></svg>";
 		newControl.addEventListener("click", toggleFullBrowser);
 		//Adding shortcuts, also ignoring if user is typing into comment/search fields etc
+		document.body.addEventListener("keydown", function(e) {
+			if (e.keyCode == 73 && location.pathname == "/watch") {
+				leaveFullBrowser();
+			}
+		})
 		document.body.addEventListener("keyup", function (e) {
 			if (e.keyCode == 27 && isFullMode && location.pathname == "/watch") {
 				leaveFullBrowser();
@@ -154,6 +171,7 @@
 
 		//We hide the full browser button if user is in full-screen video.
 		fullScreenButton.addEventListener("click", toggleIcon);
+		miniplayerButton.addEventListener("click", leaveFullBrowser);
 		controlsCreated = true;
 
 		if (extensionSettings.hideFullScreen) {
@@ -161,7 +179,7 @@
 		}
 
 		if (extensionSettings.autoToggle) {
-			toggleFullBrowser();
+			enterFullBrowser();
 		}
 	}
 
