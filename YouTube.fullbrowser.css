@@ -20,6 +20,14 @@ body.full_mode {
   position: absolute;
 }
 
+body.updated-full-mode .html5-video-container {
+  background-color: black;
+}
+
+body.updated-full-mode #masthead-container {
+  z-index: 0;
+}
+
 .ytp-chrome-bottom {
   padding-top: 0px !important;
 }
