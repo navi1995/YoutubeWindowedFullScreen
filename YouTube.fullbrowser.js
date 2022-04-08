@@ -62,6 +62,8 @@
 			if (watchContainer) {
 				mediaQueryContainer = watchContainer.querySelector("iron-media-query[query='min-width: 882px']");
 			}
+		} else if (location.pathname != "/watch" && isFullMode) {
+			leaveFullBrowser();
 		}
 	}
 
