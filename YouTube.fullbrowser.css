@@ -62,6 +62,7 @@ video.updated-full-mode {
   left: 0 !important;
   top: 0 !important;
   background-color: black;
+  object-fit: contain !important
 }
 
 body.updated-full-mode {
