@@ -11,12 +11,24 @@ function saveOptions(e) {
 }
   
 function restoreOptions() {
-	var gettingItem = chrome.storage.sync.get(null, function(items) {
-		document.querySelector("#shortcut").value = items.shortcutDisplay || '`';
-		document.querySelector("#shortcut").setAttribute("key-code", items.shortcutKey || '192');
-		document.querySelector("#fullscreen").checked = items.hideFullScreen || false;
-		document.querySelector("#auto").checked = items.autoToggle || false;
-	});
+	var isFireFox = (window.browser) ? true : false;
+	
+	//Try to fetch using chrome API. If fails, use firefox sync.
+	if (!isFireFox) {
+		chrome.storage.sync.get(null, function(items) {
+			document.querySelector("#shortcut").value = items.shortcutDisplay || '`';
+			document.querySelector("#shortcut").setAttribute("key-code", items.shortcutKey || '192');
+			document.querySelector("#fullscreen").checked = items.hideFullScreen || false;
+			document.querySelector("#auto").checked = items.autoToggle || false;
+		});
+	} else {
+		browser.storage.sync.get().then(function(items) {
+			document.querySelector("#shortcut").value = items.shortcutDisplay || '`';
+			document.querySelector("#shortcut").setAttribute("key-code", items.shortcutKey || '192');
+			document.querySelector("#fullscreen").checked = items.hideFullScreen || false;
+			document.querySelector("#auto").checked = items.autoToggle || false;
+		});
+	}
 }
   
 document.addEventListener('DOMContentLoaded', restoreOptions);

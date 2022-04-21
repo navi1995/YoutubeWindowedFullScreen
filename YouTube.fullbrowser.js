@@ -6,9 +6,17 @@
 	var resizeEvent = null;
 	var initialTheatreMode = false;
 	var extensionSettings = {};
+	var browser = browser || false;
+	var isFireFox = browser ? true : false;
 	
 	//Get settings from browser, then continue with page ready.
-	chrome.storage.sync.get(null, function(items) {
+	if (!isFireFox) {
+		chrome.storage.sync.get(null, loadBrowserSettings);
+	} else {
+		browser.storage.sync.get().then(loadBrowserSettings);
+	}
+
+	function loadBrowserSettings(items) {
 		extensionSettings = {
 			"shortcutDisplay": items.shortcutDisplay || "`",
 			"shortcutKey": items.shortcutKey || 192,
@@ -16,7 +24,7 @@
 			"autoToggle": items.autoToggle || false
 		};
 		onPageReady();
-	});
+	}
 
 	function onPageReady() {
 		if (watchContainer) {
