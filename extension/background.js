@@ -1,6 +1,8 @@
 // chrome
-chrome.runtime.onInstalled.addListener(function(obj) {
-  chrome.runtime.openOptionsPage();
+chrome.runtime.onInstalled.addListener(function(details) {
+  if(details.reason == "install"){
+    chrome.runtime.openOptionsPage();
+  }
 });
 
 function handleClick() {
