@@ -2,9 +2,9 @@
   "name": "youtubewindowedfullscreen",
   "version": "1.0.0",
   "scripts": {
-    "build": "sh ./scripts/build-extension.sh",
-    "chrome-deploy": "npm run build && chrome-webstore-upload upload --file Chrome.zip --auto-publish",
-    "firefox-deploy": "npm run build && web-ext-submit --source-dir Firefox.zip"
+    "build": "bash ./scripts/build-extension.sh",
+    "chrome-deploy": "chrome-webstore-upload upload --file Chrome.zip --auto-publish",
+    "firefox-deploy": "web-ext-submit --source-dir Firefox.zip"
   },
   "author": "Navi Jador",
   "devDependencies": {
