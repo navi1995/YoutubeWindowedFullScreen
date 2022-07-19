@@ -4,7 +4,7 @@
   "scripts": {
     "build": "bash ./scripts/build-extension.sh",
     "chrome-deploy": "chrome-webstore-upload upload --extension-id $EXTENSION_ID --source ./deployments/Chrome.zip --auto-publish",
-    "firefox-deploy": "web-ext-submit --source-dir ./deployments/Firefox.zip"
+    "firefox-deploy": "web-ext-submit --source-dir ./deployments/Firefox"
   },
   "author": "Navi Jador",
   "devDependencies": {
