@@ -1,0 +1,14 @@
+stages:
+  - build
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - npm run build
+
+deploy-extension:
+  stage: deploy 
+  script:
+    - npm run chrome-deploy
+    - npm run firefox-deploy

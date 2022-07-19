@@ -28,6 +28,10 @@ body.updated-full-mode #masthead-container {
   z-index: 0;
 }
 
+body.updated-full-mode .ytp-contextmenu { 
+  z-index: 2147483647 !important;
+}
+
 .ytp-chrome-bottom {
   padding-top: 0px !important;
 }
