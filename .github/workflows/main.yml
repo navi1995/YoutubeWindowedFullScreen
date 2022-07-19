@@ -23,6 +23,7 @@ jobs:
       - run: npm run build
       - name: submit-chrome
         run: npm run chrome-deploy
+        continue-on-error: true
         env:
           EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
