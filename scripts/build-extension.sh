@@ -1,4 +1,6 @@
 #!/bin/sh
+rm -rf sitemap
+mkdir deployments
 version=$(cat ./extension/manifest.json | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
 zip_version="${version/./_}"
 firefox_output=./deployments/Firefox.zip
