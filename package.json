@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "bash ./scripts/build-extension.sh",
-    "chrome-deploy": "chrome-webstore-upload upload --extension-id $EXTENSION_ID --file ./deployments/Chrome.zip --auto-publish",
+    "chrome-deploy": "chrome-webstore-upload upload --extension-id $EXTENSION_ID --source ./deployments/Chrome.zip --auto-publish",
     "firefox-deploy": "web-ext-submit --source-dir ./deployments/Firefox.zip"
   },
   "author": "Navi Jador",
