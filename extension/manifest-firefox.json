@@ -40,7 +40,8 @@
 	"permissions": ["storage"],
 	"browser_specific_settings": {
 		"gecko": {
-			"strict_min_version": "57.0a1"
+			"strict_min_version": "57.0a1",
+			"id": "{59c55aed-bdb3-4f2f-b81d-27011a689be6}"
 		}
 	}
 }
