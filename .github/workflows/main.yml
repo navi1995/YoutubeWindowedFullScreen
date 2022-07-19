@@ -20,11 +20,11 @@ jobs:
           cache: npm
       - name: install
         run: npm ci || npm install
-      - run: cd $DIRECTORY && npm run build
+      - run: npm run build
       - name: submit-chrome
-        run: cd $DIRECTORY && npm run chrome-deploy
+        run: npm run chrome-deploy
       - name: submit-firefox
-        run: cd $DIRECTORY && npm run firefox-deploy
+        run: npm run firefox-deploy
         env:
           EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
