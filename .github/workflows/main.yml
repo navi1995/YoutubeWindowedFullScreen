@@ -31,6 +31,7 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
       - name: submit-firefox
         run: npm run firefox-deploy
+        continue-on-error: true
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
