@@ -3,17 +3,9 @@ rm -rf deployments
 mkdir deployments
 mkdir deployments/Firefox/
 version=$(cat ./extension/manifest.json | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
-zip_version="${version/./_}"
 firefox_output=./deployments/Firefox/
 chrome_output=./deployments/Chrome.zip
 manifest_location=./deployments/manifest.json
-sed_option=
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	sed_option='-i ""'
-else
-	sed_option='-i'
-fi
 
 cp -r ./extension/* $firefox_output
 rm -rf $firefox_output/*.json
@@ -24,7 +16,6 @@ else
   sed -i -e 's/\"version\":.*/\"version\": "'${version}'",/g' "${manifest_location}"
 fi
 cp $manifest_location $firefox_output
-
 
 zip -j $chrome_output ./extension/* -x *.json
 yes | cp ./extension/manifest-chrome.json $manifest_location
