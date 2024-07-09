@@ -214,7 +214,7 @@
 	}
 
 	function isPageVideo() {
-		return location.pathname == "/watch";
+		return location.pathname.includes("/watch") || location.pathname.includes("/live/");
 	}
 
 	function isFullScreenActive() {
