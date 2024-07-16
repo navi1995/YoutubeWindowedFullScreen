@@ -1,23 +1,5 @@
-div#movie_player.full_mode {
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  position: fixed;
-}
-
-body.full_mode {
-  overflow: hidden;
-}
-
-#masthead-positioner.full_mode {
-  z-index: initial;
-}
-
-.html5-video-container {
-  height: 100%;
-  width: 100%;
-  position: absolute;
+body.updated-full-mode {
+  overflow-y: hidden !important;
 }
 
 body.updated-full-mode .html5-video-container {
@@ -25,52 +7,21 @@ body.updated-full-mode .html5-video-container {
 }
 
 body.updated-full-mode #masthead-container {
-  z-index: 0;
+  opacity: 0 !important;
 }
 
-body.updated-full-mode .ytp-contextmenu { 
-  z-index: 2147483647 !important;
-}
+/* body.updated-full-mode #masthead-container.show,
+body.updated-full-mode #masthead-container:hover,
+body.updated-full-mode #masthead-container:focus-within {
+  opacity: 1 !important;
+} */
 
 .ytp-chrome-bottom {
   padding-top: 0px !important;
 }
-.html5-main-video.full_mode {
-  height: 100% !important;
-  width: 100% !important;
-  left: 0 !important;
-  top: 0 !important;
-}
-
-.ytp-chrome-bottom.full_mode {
-  width: 99% !important;
-}
 
 .ytp-upnext {
   top: 0px !important;
-}
-
-#movie_player.updated-full-mode {
-  width: 100% !important;
-  height: 100% !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  z-index: 9999 !important;
-  z-index: 2147483646 !important;
-}
-
-video.updated-full-mode {
-  width: 100% !important;
-  height: 100% !important;
-  left: 0 !important;
-  top: 0 !important;
-  background-color: black;
-  object-fit: contain !important
-}
-
-body.updated-full-mode {
-  overflow-y: hidden !important;
 }
 
 .svg-container {
@@ -81,10 +32,18 @@ body.updated-full-mode {
   top: 0px;
 }
 
-#T_hr {
-  z-index: 9998 !important; 
-}
-
 .ytp-browser-button {
   display: inline-block !important;
+}
+
+body.updated-full-mode ytd-app ytd-watch #player.ytd-watch,
+body.updated-full-mode ytd-app ytd-watch-grid #player-full-bleed-container.ytd-watch-grid,
+body.updated-full-mode #full-bleed-container {
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+body.updated-full-mode ytd-page-manager,
+body.updated-full-mode ytd-watch-flexy {
+  margin-top: 0 !important;
 }
