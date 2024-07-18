@@ -94,6 +94,7 @@
 			isTheatreMode = true;
 		}
 
+		window.scrollTo(0, 0);
 		document.body.classList.add("updated-full-mode");
 		original.style.display = "none";
 		newControl.style.display = "inline-block";
